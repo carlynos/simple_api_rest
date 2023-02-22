@@ -26,13 +26,22 @@ class DogController extends Controller
      */
     public function store(Request $request)
     {
-        if($request->raca !== null && $request->nome !== null){
-            $dog = Dog::create($request->all());
-            $result = $dog;
+        if($request->header('application-key') == null){
+            $result = ['error' => ['id' => 1001,'description' => 'Api key não recebida!']];
         }else{
-            $result = ['error' => ['id' => 1000,'description' => 'Necessario Informar nome e raca!']];
-        }
+            if($request->header('application-key') !== "minhakey123"){
+                $result = ['error' => ['id' => 1002,'description' => 'Key informada invalida']];
+            }else{
+                if($request->raca !== null && $request->nome !== null){
+                    $dog = Dog::create($request->all());
+                    $result = $dog;
+                }else{
+                    $result = ['error' => ['id' => 1000,'description' => 'Necessario Informar nome e raca!']];
+                }
+            }
+        }  
 
+        //return $request->header();
         return json_encode($result);
     }
 
